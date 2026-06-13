@@ -183,6 +183,30 @@ export function CoursesContent() {
     ? coursesData 
     : coursesData.filter(course => course.category === activeCategory)
 
+  // Container variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.2 }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.4, ease: easePremuim }
+    }
+  }
+
   return (
     <section ref={sectionRef} className="relative pt-32 pb-20 bg-[#fcfdfd] min-h-screen">
       {/* Background Pattern */}
@@ -208,7 +232,6 @@ export function CoursesContent() {
           <p className="text-lg lg:text-xl text-[#224d4b]/70 max-w-2xl mx-auto mb-6">
             Comprehensive preparation programs designed by experts for NEET, JEE, and KEAM aspirants.
           </p>
-          {/* YouTube Link */}
           <a
             href="https://youtube.com/@catalystacademy"
             target="_blank"
@@ -233,7 +256,10 @@ export function CoursesContent() {
           {categories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              onClick={() => {
+                setActiveCategory(category.id);
+                setExpandedCourse(null);
+              }}
               className={`px-4 lg:px-6 py-2 lg:py-2.5 text-sm font-medium rounded-full transition-all ${
                 activeCategory === category.id
                   ? 'bg-[#255e5b] text-white shadow-lg'
@@ -245,51 +271,55 @@ export function CoursesContent() {
           ))}
         </motion.div>
 
-        {/* Courses Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredCourses.map((course, index) => (
+        {/* Courses Grid - Wrapped entirely in AnimatePresence with mode="wait" */}
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={activeCategory}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8"
+          >
+            {filteredCourses.map((course) => (
               <motion.div
                 key={course.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4, ease: easePremuim, delay: index * 0.05 }}
-                className="bg-white rounded-2xl lg:rounded-3xl border border-[#ade2d9]/30 shadow-sm hover:shadow-xl transition-all overflow-hidden group"
+                variants={itemVariants}
+                className={`bg-white rounded-2xl lg:rounded-3xl border border-[#ade2d9]/30 shadow-sm hover:shadow-xl transition-all group relative flex flex-col h-full ${
+                  expandedCourse === course.id ? 'z-50' : 'z-10'
+                }`}
               >
                 {/* Thumbnail */}
-                <div className="relative aspect-video bg-gradient-to-br from-[#255e5b] to-[#38948c] overflow-hidden">
+                <div className="relative aspect-video bg-gradient-to-br from-[#255e5b] to-[#38948c] overflow-hidden rounded-t-2xl lg:rounded-t-3xl shrink-0">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-7xl lg:text-8xl font-bold text-white/10">
+                    <span className="text-5xl sm:text-7xl lg:text-8xl font-bold text-white/10">
                       {course.title.charAt(0)}
                     </span>
                   </div>
                   <button className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                      <Play className="w-6 h-6 text-white fill-white ml-1" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <Play className="w-4 h-4 sm:w-6 sm:h-6 text-white fill-white ml-1" />
                     </div>
                   </button>
-                  {/* Discount Badge */}
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white text-[10px] sm:text-xs font-bold rounded-full">
                     {course.discount}
                   </div>
-                  {/* Seats Badge */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 bg-black/60 backdrop-blur-sm text-white text-xs rounded-full">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-black/60 backdrop-blur-sm text-white text-[10px] sm:text-xs rounded-full">
                     <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                    {course.seatsLeft} seats left
+                    <span className="hidden sm:inline">{course.seatsLeft} seats left</span>
+                    <span className="sm:hidden">{course.seatsLeft} left</span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4 lg:p-6">
-                  <h3 className="font-[family-name:var(--font-display)] text-lg lg:text-xl font-bold text-[#224d4b] mb-1">
+                <div className="p-3 sm:p-4 lg:p-6 flex flex-col flex-1">
+                  <h3 className="font-[family-name:var(--font-display)] text-base sm:text-lg lg:text-xl font-bold text-[#224d4b] mb-1 line-clamp-2">
                     {course.title}
                   </h3>
-                  <p className="text-sm text-[#38948c] mb-3">{course.subtitle}</p>
+                  <p className="text-[10px] sm:text-sm text-[#38948c] mb-2 sm:mb-3 line-clamp-1">{course.subtitle}</p>
 
                   {/* Stats */}
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-[#224d4b]/60 mb-4">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 text-[10px] sm:text-xs text-[#224d4b]/60 mb-3 sm:mb-4">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {course.duration}
@@ -305,68 +335,78 @@ export function CoursesContent() {
                   </div>
 
                   {/* Price */}
-                  <div className="flex items-end gap-2 mb-4">
-                    <span className="text-2xl font-bold text-[#255e5b]">{course.price}</span>
-                    <span className="text-sm text-[#224d4b]/40 line-through">{course.originalPrice}</span>
+                  <div className="flex flex-wrap items-end gap-1 sm:gap-2 mb-3 sm:mb-4">
+                    <span className="text-lg sm:text-2xl font-bold text-[#255e5b]">{course.price}</span>
+                    <span className="text-[10px] sm:text-sm text-[#224d4b]/40 line-through mb-0.5">{course.originalPrice}</span>
                   </div>
 
-                  {/* Features Preview */}
-                  <div className="space-y-2 mb-4">
+                  {/* Features */}
+                  <div className="space-y-1.5 sm:space-y-2 mb-4 hidden sm:block">
                     {course.features.slice(0, 3).map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-[#224d4b]/70">
-                        <CheckCircle className="w-4 h-4 text-[#38948c]" />
-                        {feature}
+                      <div key={i} className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm text-[#224d4b]/70">
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-[#38948c] flex-shrink-0" />
+                        <span className="truncate">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-1.5 mb-3 sm:hidden">
+                    {course.features.slice(0, 2).map((feature, i) => (
+                      <div key={i} className="flex items-center gap-1 text-[10px] text-[#224d4b]/70">
+                        <CheckCircle className="w-3 h-3 text-[#38948c] flex-shrink-0" />
+                        <span className="truncate">{feature}</span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Expand/CTA */}
-                  <div className="flex gap-2">
+                  {/* Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 mt-auto pt-2">
                     <button
                       onClick={() => setExpandedCourse(expandedCourse === course.id ? null : course.id)}
-                      className="flex-1 py-2.5 text-sm font-medium text-[#255e5b] border border-[#ade2d9] rounded-xl hover:bg-[#f3faf9] transition-colors"
+                      className="w-full py-2 sm:py-2.5 text-[10px] sm:text-sm font-medium text-[#255e5b] border border-[#ade2d9] rounded-lg sm:rounded-xl hover:bg-[#f3faf9] transition-colors"
                     >
-                      {expandedCourse === course.id ? 'Show Less' : 'View Modules'}
+                      {expandedCourse === course.id ? 'Close' : 'Modules'}
                     </button>
-                    <button className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#255e5b] to-[#38948c] rounded-xl hover:shadow-lg transition-all">
-                      Enroll Now
+                    <button className="w-full py-2 sm:py-2.5 text-[10px] sm:text-sm font-medium text-white bg-gradient-to-r from-[#255e5b] to-[#38948c] rounded-lg sm:rounded-xl hover:shadow-lg transition-all">
+                      Enroll
                     </button>
                   </div>
 
-                  {/* Expanded Modules */}
+                  {/* Expanded Dropdown - Added origin-top and scaleY for smooth unfolding */}
                   <AnimatePresence>
                     {expandedCourse === course.id && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: easePremuim }}
-                        className="overflow-hidden"
+                        initial={{ opacity: 0, y: -10, scaleY: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                        exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl sm:rounded-2xl border border-[#ade2d9]/30 shadow-2xl z-50 overflow-hidden origin-top"
                       >
-                        <div className="pt-4 mt-4 border-t border-[#ade2d9]/30 space-y-2">
+                        <div className="p-2 sm:p-4 space-y-1.5 sm:space-y-2 max-h-[200px] sm:max-h-[320px] overflow-y-auto">
                           {course.modules.map((module, i) => (
                             <div
                               key={i}
-                              className={`flex items-center justify-between p-3 rounded-xl ${
+                              className={`flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-md sm:rounded-xl gap-1 sm:gap-0 ${
                                 module.free ? 'bg-[#f3faf9]' : 'bg-gray-50'
                               }`}
                             >
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5 sm:gap-2">
                                 {module.free ? (
-                                  <Play className="w-4 h-4 text-[#38948c]" />
+                                  <Play className="w-3 h-3 sm:w-4 sm:h-4 text-[#38948c] flex-shrink-0" />
                                 ) : (
-                                  <Lock className="w-4 h-4 text-gray-400" />
+                                  <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
                                 )}
-                                <span className={`text-sm ${module.free ? 'text-[#224d4b]' : 'text-gray-500'}`}>
+                                <span className={`text-[9px] sm:text-sm ${module.free ? 'text-[#224d4b]' : 'text-gray-500'} line-clamp-1`}>
                                   {module.name}
                                 </span>
-                                {module.free && (
-                                  <span className="px-1.5 py-0.5 text-[10px] font-medium text-[#255e5b] bg-[#ade2d9]/30 rounded">
+                              </div>
+                              <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto pl-4 sm:pl-0">
+                                {module.free ? (
+                                  <span className="px-1.5 py-0.5 text-[8px] sm:text-[10px] font-medium text-[#255e5b] bg-[#ade2d9]/30 rounded">
                                     FREE
                                   </span>
-                                )}
+                                ) : <div />}
+                                <span className="text-[9px] sm:text-xs text-[#224d4b]/50">{module.duration}</span>
                               </div>
-                              <span className="text-xs text-[#224d4b]/50">{module.duration}</span>
                             </div>
                           ))}
                         </div>
@@ -376,8 +416,8 @@ export function CoursesContent() {
                 </div>
               </motion.div>
             ))}
-          </AnimatePresence>
-        </div>
+          </motion.div>
+        </AnimatePresence>
 
         {/* CTA Section */}
         <motion.div
@@ -386,16 +426,16 @@ export function CoursesContent() {
           transition={{ duration: 0.6, ease: easePremuim, delay: 0.4 }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-br from-[#255e5b] to-[#38948c] rounded-3xl p-8 lg:p-12 text-white">
-            <h3 className="font-[family-name:var(--font-display)] text-2xl lg:text-3xl font-bold mb-4">
+          <div className="bg-gradient-to-br from-[#255e5b] to-[#38948c] rounded-3xl p-6 sm:p-8 lg:p-12 text-white">
+            <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4">
               Not sure which course to pick?
             </h3>
-            <p className="text-white/80 mb-6 max-w-xl mx-auto">
+            <p className="text-sm sm:text-base text-white/80 mb-5 sm:mb-6 max-w-xl mx-auto">
               Book a free counseling session with our experts and get personalized guidance for your preparation journey.
             </p>
-            <button className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#255e5b] font-semibold rounded-xl hover:bg-[#f3faf9] transition-colors shadow-lg">
+            <button className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-[#255e5b] text-sm sm:text-base font-semibold rounded-xl hover:bg-[#f3faf9] transition-colors shadow-lg">
               Book Free Consultation
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </motion.div>

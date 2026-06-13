@@ -9,7 +9,7 @@ const easePremuim = [0.16, 1, 0.3, 1]
 const facultyData = [
   {
     id: 1,
-    name: 'Dr. Rajesh Kumar',
+    name: 'Arun Nath',
     role: 'HEAD OF PHYSICS',
     experience: '18+ Years Exp',
     image: '/faculty/physics-professor.jpg',
@@ -19,7 +19,7 @@ const facultyData = [
   },
   {
     id: 2,
-    name: 'Dr. Priya Menon',
+    name: 'Hasheersha',
     role: 'HEAD OF CHEMISTRY',
     experience: '15+ Years Exp',
     image: '/faculty/chemistry-professor.jpg',

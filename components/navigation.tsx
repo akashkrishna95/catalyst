@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, GraduationCap, User, LogOut, BookOpen, ChevronDown } from 'lucide-react'
+import { Menu, X, User, LogOut, BookOpen, ChevronDown } from 'lucide-react'
 
 const navLinks = [
   {
@@ -110,14 +110,13 @@ export function Navigation() {
         }}
       >
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <button onClick={handleLogoClick} className="flex items-center gap-3 group cursor-pointer">
-            <div className="w-10 h-10 sm:w-11 sm:h-10 rounded-lg bg-gradient-to-br from-[#255e5b] to-[#38948c] flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
-              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-5 text-white" />
-            </div>
-            <span className="hidden sm:block font-[family-name:var(--font-display)] font-extrabold text-[#224d4b] text-lg tracking-tight">
-              CATALYST
-            </span>
+          {/* Custom SVG Logo */}
+          <button onClick={handleLogoClick} className="flex items-center group cursor-pointer">
+            <img 
+              src="https://res.cloudinary.com/do1wkruog/image/upload/v1780586985/catalyst_logo_vq9sqa.svg" 
+              alt="Catalyst Logo" 
+              className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            />
           </button>
 
           {/* Desktop Nav */}
@@ -318,16 +317,16 @@ export function Navigation() {
             >
               {/* Top bar inside sheet — mirrors navbar alignment */}
               <div className="flex items-center justify-between px-5 pt-5 pb-4">
+                {/* Custom SVG Logo in Mobile Menu */}
                 <button
                   onClick={handleLogoClick}
-                  className="flex items-center gap-3"
+                  className="flex items-center"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#255e5b] to-[#38948c] flex items-center justify-center shadow-md">
-                    <GraduationCap className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="font-[family-name:var(--font-display)] font-extrabold text-[#224d4b] text-lg tracking-tight">
-                    CATALYST
-                  </span>
+                  <img 
+                    src="https://res.cloudinary.com/do1wkruog/image/upload/v1780586985/catalyst_logo_vq9sqa.svg" 
+                    alt="Catalyst Logo" 
+                    className="h-9 w-auto object-contain"
+                  />
                 </button>
                 <button
                   onClick={() => setIsMenuOpen(false)}
