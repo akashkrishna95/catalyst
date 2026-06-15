@@ -1,3 +1,200 @@
+// 'use client'
+
+// import { useState, useEffect } from 'react'
+// import { motion } from 'framer-motion'
+// import { ArrowRight, Mail, Sparkles, Instagram, Twitter, Youtube } from 'lucide-react'
+
+// // --- Premium Easing Curve ---
+// const easePremium = [0.16, 1, 0.3, 1]
+
+// // --- Text Reveal Component ---
+// const AnimatedLetters = ({ text }: { text: string }) => {
+//   const container = {
+//     hidden: { opacity: 0 },
+//     visible: (i = 1) => ({
+//       opacity: 1,
+//       transition: { staggerChildren: 0.04, delayChildren: 0.1 * i },
+//     }),
+//   }
+
+//   const child = {
+//     visible: {
+//       opacity: 1,
+//       y: 0,
+//       filter: "blur(0px)",
+//       transition: { type: "spring", damping: 16, stiffness: 100 },
+//     },
+//     hidden: {
+//       opacity: 0,
+//       y: 40,
+//       filter: "blur(10px)",
+//       transition: { type: "spring", damping: 16, stiffness: 100 },
+//     },
+//   }
+
+//   return (
+//     <motion.div
+//       variants={container}
+//       initial="hidden"
+//       animate="visible"
+//       className="flex flex-wrap justify-center overflow-hidden"
+//     >
+//       {text.split(" ").map((word, index) => (
+//         <span key={index} className="inline-block whitespace-nowrap mr-[2vw]">
+//           {word.split("").map((letter, index) => (
+//             <motion.span
+//               variants={child}
+//               key={index}
+//               className="inline-block"
+//             >
+//               {letter}
+//             </motion.span>
+//           ))}
+//         </span>
+//       ))}
+//     </motion.div>
+//   )
+// }
+
+// // --- Main Page Component ---
+// export function CoursesContent() {
+//   const [email, setEmail] = useState('')
+//   const [isSubmitted, setIsSubmitted] = useState(false)
+
+//   // Inject the Lottie Web Component Script safely
+//   useEffect(() => {
+//     const scriptId = 'lottie-wc-script'
+//     if (!document.getElementById(scriptId)) {
+//       const script = document.createElement('script')
+//       script.id = scriptId
+//       script.src = 'https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js'
+//       script.type = 'module'
+//       document.body.appendChild(script)
+//     }
+//   }, [])
+
+//   const handleSubmit = (e: React.FormEvent) => {
+//     e.preventDefault()
+//     if (email) setIsSubmitted(true)
+//   }
+
+//   return (
+//     <div className="relative w-full min-h-screen bg-[#f3faf9] text-[#0d2626] overflow-hidden flex flex-col justify-between selection:bg-[#38948c] selection:text-white">
+      
+//       {/* Empty Header space for visual balance since logo/badges were removed */}
+//       <header className="relative z-10 w-full p-6 sm:p-10 h-20" />
+
+//       {/* Main Content */}
+//       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 w-full max-w-6xl mx-auto">
+        
+//         {/* Lottie Animation */}
+//         <motion.div
+//           initial={{ opacity: 0, scale: 0.8 }}
+//           animate={{ opacity: 1, scale: 1 }}
+//           transition={{ duration: 1, ease: easePremium }}
+//           className="flex justify-center items-center -mb-8 sm:-mb-12 pointer-events-none"
+//           dangerouslySetInnerHTML={{
+//             __html: `<dotlottie-wc src="https://lottie.host/829d8b53-8bb0-4c7d-a6b4-d37f0898d3f8/Beka2vnsFg.lottie" style="width: 300px; height: 300px;" autoplay loop></dotlottie-wc>`
+//           }}
+//         />
+
+//         {/* Giant Kinetic Typography */}
+//         <div className="mb-10 text-center cursor-default z-10 relative">
+//           <h1 className="font-[family-name:var(--font-display)] text-[12vw] sm:text-[8vw] md:text-[6vw] font-black leading-[0.9] tracking-tighter text-[#0d2626]">
+//             <AnimatedLetters text="COMING SOON" />
+//           </h1>
+//         </div>
+
+//         {/* Subtitle */}
+//         <motion.p
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 1, delay: 0.4, ease: easePremium }}
+//           className="text-lg sm:text-xl text-[#224d4b]/70 text-center max-w-2xl mx-auto mb-10 font-medium"
+//         >
+//           We are engineering a completely new, elite preparation ecosystem for NEET, JEE, and KEAM aspirants.
+//         </motion.p>
+
+//         {/* Minimalist Email Capture */}
+//         <motion.div
+//           initial={{ opacity: 0, scale: 0.95 }}
+//           animate={{ opacity: 1, scale: 1 }}
+//           transition={{ duration: 0.8, delay: 0.6, ease: easePremium }}
+//           className="w-full max-w-md relative z-20"
+//         >
+//           <div className="bg-white p-2 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#ade2d9]/30">
+//             {!isSubmitted ? (
+//               <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
+//                 <div className="relative flex-1">
+//                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+//                     <Mail className="h-5 w-5 text-[#38948c]/50" />
+//                   </div>
+//                   <input
+//                     type="email"
+//                     required
+//                     value={email}
+//                     onChange={(e) => setEmail(e.target.value)}
+//                     className="block w-full pl-11 pr-4 py-4 bg-transparent border-none rounded-xl text-[#0d2626] placeholder-[#224d4b]/40 focus:outline-none focus:ring-0 sm:text-sm font-medium"
+//                     placeholder="Enter your email address"
+//                   />
+//                 </div>
+//                 <button
+//                   type="submit"
+//                   className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-sm font-bold rounded-xl text-white bg-[#255e5b] hover:bg-[#1a3838] transition-colors gap-2 group"
+//                 >
+//                   Join Waitlist
+//                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+//                 </button>
+//               </form>
+//             ) : (
+//               <motion.div 
+//                 initial={{ opacity: 0 }} 
+//                 animate={{ opacity: 1 }} 
+//                 className="px-6 py-4 flex items-center justify-center gap-2 text-[#255e5b]"
+//               >
+//                 <Sparkles className="w-5 h-5" />
+//                 <p className="font-bold">You're on the list. We'll be in touch.</p>
+//               </motion.div>
+//             )}
+//           </div>
+//         </motion.div>
+//       </main>
+
+//       {/* Footer with Centered Socials */}
+//       <footer className="relative z-10 w-full p-6 sm:p-10 flex justify-center items-center gap-4">
+//         <motion.div
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           transition={{ delay: 0.8 }}
+//           className="flex items-center gap-8"
+//         >
+//           <a href="#" className="text-[#224d4b]/40 hover:text-[#38948c] transition-colors">
+//             <Instagram className="w-6 h-6" />
+//           </a>
+//           <a href="#" className="text-[#224d4b]/40 hover:text-[#38948c] transition-colors">
+//             <Twitter className="w-6 h-6" />
+//           </a>
+//           <a href="#" className="text-[#224d4b]/40 hover:text-[#38948c] transition-colors">
+//             <Youtube className="w-6 h-6" />
+//           </a>
+//         </motion.div>
+//       </footer>
+//     </div>
+//   )
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
 'use client'
 
 import { useRef, useState } from 'react'

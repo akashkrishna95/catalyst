@@ -161,7 +161,15 @@ export function Footer() {
             </Link>
           </div>
           <div className="text-xs text-[#7dcbc1]/40">
-            Made with precision in Kerala
+            Designed by{' '}
+            <a 
+              href="https://akashkrishna.vercel.app" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-[#7dcbc1] transition-colors font-medium text-[#7dcbc1]/70"
+            >
+              Akash Krishna
+            </a>
           </div>
         </motion.div>
       </div>

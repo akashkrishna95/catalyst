@@ -113,7 +113,7 @@ export function Navigation() {
           {/* Custom SVG Logo */}
           <button onClick={handleLogoClick} className="flex items-center group cursor-pointer">
             <img 
-              src="https://res.cloudinary.com/do1wkruog/image/upload/v1780586985/catalyst_logo_vq9sqa.svg" 
+              src="https://res.cloudinary.com/dp2r068c8/image/upload/v1781361635/CATALYST_STUDY_CENTRE_logo_qoaqxh.svg" 
               alt="Catalyst Logo" 
               className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
@@ -323,7 +323,7 @@ export function Navigation() {
                   className="flex items-center"
                 >
                   <img 
-                    src="https://res.cloudinary.com/do1wkruog/image/upload/v1780586985/catalyst_logo_vq9sqa.svg" 
+                    src="https://res.cloudinary.com/dp2r068c8/image/upload/v1781361635/CATALYST_STUDY_CENTRE_logo_qoaqxh.svg" 
                     alt="Catalyst Logo" 
                     className="h-9 w-auto object-contain"
                   />

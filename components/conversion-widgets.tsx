@@ -42,7 +42,7 @@ export function WhatsAppButton() {
       </AnimatePresence>
 
       <motion.a
-        href="https://wa.me/919876543210?text=Hi%2C%20I%27m%20interested%20in%20CATALYST%20courses"
+        href="https://wa.me/919895668184"
         target="_blank"
         rel="noopener noreferrer"
         className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all ${

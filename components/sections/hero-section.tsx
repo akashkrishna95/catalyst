@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState, Suspense } from 'react'
+import { useRef, useEffect, Suspense } from 'react'
 import { motion, useInView, useAnimation } from 'framer-motion'
 import { Play } from 'lucide-react'
 import dynamic from 'next/dynamic'
@@ -26,31 +26,10 @@ export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const isInView = useInView(sectionRef, { once: false, amount: 0.15 })
   const controls = useAnimation()
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (isInView) controls.start('visible')
   }, [isInView, controls])
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!buttonRef.current) return
-    const rect = buttonRef.current.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-    const distanceX = e.clientX - centerX
-    const distanceY = e.clientY - centerY
-    const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2)
-    if (distance < 80) {
-      buttonRef.current.style.boxShadow = '0 20px 40px rgba(37, 94, 91, 0.4)'
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (buttonRef.current) {
-      buttonRef.current.style.boxShadow = '0 4px 12px rgba(37, 94, 91, 0.2)'
-    }
-  }
 
   const scrollToContact = () =>
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
@@ -130,8 +109,8 @@ export function HeroSection() {
             animate={controls}
             className="lg:col-span-7 relative z-20 w-full min-w-0"
           >
-            {/* Glass container: Centers text on mobile, aligns left on desktop (lg) */}
-            <div className="w-full min-w-0 overflow-hidden lg:backdrop-blur-none lg:bg-transparent lg:border-transparent space-y-5 lg:space-y-8 flex flex-col items-center text-center lg:items-start lg:text-left">
+            {/* REMOVED overflow-hidden from this div so the shadow stops clipping */}
+            <div className="w-full min-w-0 lg:backdrop-blur-none lg:bg-transparent lg:border-transparent space-y-5 lg:space-y-8 flex flex-col items-center text-center lg:items-start lg:text-left">
 
               {/* H1 */}
               <motion.h1
@@ -156,18 +135,15 @@ export function HeroSection() {
               <motion.div
                 variants={itemVariants}
                 className="flex gap-2 sm:gap-4 w-full justify-center lg:justify-start pt-8 md:pt-16 sm:flex-row"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
               >
-                <motion.button
-                  ref={buttonRef}
+                <button
                   onClick={scrollToContact}
-                  transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
-                  className="relative group px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#255e5b] to-[#2b7671] hover:from-[#2b7671] hover:to-[#38948c] text-white font-semibold rounded-lg sm:rounded-xl shadow-lg hover:-translate-y-1 hover:shadow-[0_15px_30px_-5px_rgba(56,148,140,0.6)] active:scale-95 transition-all duration-300 overflow-hidden text-xs sm:text-sm whitespace-nowrap"
+                  className="relative group px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#255e5b] to-[#2b7671] hover:from-[#2b7671] hover:to-[#38948c] text-white font-semibold rounded-lg sm:rounded-xl shadow-md hover:shadow-[0_8px_20px_rgba(37,94,91,0.3)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 overflow-hidden text-xs sm:text-sm whitespace-nowrap z-10"
                 >
                   <span className="relative z-10">Secure Your Batch</span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                </motion.button>
+                  {/* Clean sweeping shine effect */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-in-out pointer-events-none" />
+                </button>
 
                 <button
                   onClick={scrollToCourses}
