@@ -11,7 +11,7 @@ const navLinks = [
     href: '/',
     label: 'Home',
     sections: [
-      { label: 'Hero', href: '/#hero' },
+      { label: 'Start Here', href: '/#hero' },
       { label: 'Faculty', href: '/#faculty' },
       { label: 'Results', href: '/#results' },
       { label: 'Why Choose Us', href: '/#why-choose-us' },
