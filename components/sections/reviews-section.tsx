@@ -4,7 +4,8 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Star, CheckCircle } from 'lucide-react'
 
-const easePremuim = [0.16, 1, 0.3, 1]
+// Premium buttery-smooth easing curve
+const easePremium = [0.16, 1, 0.3, 1]
 
 const reviewsData = [
   {
@@ -49,11 +50,13 @@ export function ReviewsSection() {
   const isInView = useInView(sectionRef, { once: true, amount: 0.2 })
   const [activeIndex, setActiveIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right')
 
   // Auto-play every 6 seconds
   useEffect(() => {
     if (!isAutoPlaying || !isInView) return
     const interval = setInterval(() => {
+      setSlideDirection('right')
       setActiveIndex((prev) => (prev + 1) % reviewsData.length)
     }, 6000)
     return () => clearInterval(interval)
@@ -61,6 +64,7 @@ export function ReviewsSection() {
 
   const handleNavigation = (direction: 'prev' | 'next') => {
     setIsAutoPlaying(false)
+    setSlideDirection(direction === 'prev' ? 'left' : 'right')
     setActiveIndex((prev) => {
       if (direction === 'prev') {
         return prev === 0 ? reviewsData.length - 1 : prev - 1
@@ -71,25 +75,40 @@ export function ReviewsSection() {
 
   const currentReview = reviewsData[activeIndex]
 
+  // Highly optimized hardware-accelerated slide transition
+  const slideVariants = {
+    enter: (direction: 'left' | 'right') => ({
+      opacity: 0,
+      x: direction === 'right' ? 30 : -30,
+      scale: 0.98,
+    }),
+    center: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+    },
+    exit: (direction: 'left' | 'right') => ({
+      opacity: 0,
+      x: direction === 'right' ? -30 : 30,
+      scale: 0.98,
+    }),
+  }
+
   return (
     <section
       ref={sectionRef}
-      className="relative py-16 lg:py-24 bg-[#0d2626] overflow-hidden"
+      // FIX: -mt-[1px] removes mobile line gap, pt adjusted for seamless flow
+      className="relative pt-8 sm:pt-12 lg:pt-20 pb-16 lg:pb-24 bg-[#0d2626] overflow-hidden -mt-[1px] antialiased contain-paint"
     >
-      {/* DotField Background removed - using ambient glow only */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
-        {/* Removed DotField component */}
-      </div>
-
-      {/* Ambient Glow */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] lg:w-[600px] h-[400px] lg:h-[600px] bg-[#255e5b]/30 rounded-full blur-[150px] z-0" />
+      {/* Ambient Glow - Heavily optimized for mobile */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] blur-[80px] lg:w-[600px] lg:h-[600px] lg:blur-[120px] bg-[#50b1a8]/15 rounded-full pointer-events-none z-0 transform-gpu" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: easePremuim }}
+          transition={{ duration: 0.6, ease: easePremium }}
           className="text-center mb-8 lg:mb-12"
         >
           <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2">
@@ -99,92 +118,98 @@ export function ReviewsSection() {
 
         {/* Main Review Card */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: easePremuim, delay: 0.2 }}
-          className="relative"
+          transition={{ duration: 0.8, ease: easePremium, delay: 0.2 }}
+          className="relative max-w-4xl mx-auto"
         >
-          {/* Card */}
-          <div className="relative bg-[#f3faf9] backdrop-blur-3xl border border-[#38948c]/20 rounded-2xl lg:rounded-[2.5rem] p-6 sm:p-8 lg:p-10 shadow-[0_20px_50px_rgba(13,38,38,0.1)]">
+          {/* Card Wrapper - Min-height locks aspect ratio to prevent layout jumping */}
+          <div className="relative bg-[#f3faf9] backdrop-blur-xl lg:backdrop-blur-3xl border border-[#38948c]/20 rounded-3xl lg:rounded-[2.5rem] p-6 sm:p-8 lg:p-12 shadow-[0_20px_50px_rgba(13,38,38,0.15)] min-h-[420px] sm:min-h-[380px] lg:min-h-[400px] flex flex-col justify-between overflow-hidden">
+            
             {/* Decorative Quote */}
-            <div className="absolute top-4 lg:top-6 left-4 lg:left-8 text-5xl lg:text-7xl font-serif text-[#38948c]/20 pointer-events-none select-none">
+            <div className="absolute top-4 lg:top-8 left-4 lg:left-8 text-6xl lg:text-8xl font-serif text-[#38948c]/15 pointer-events-none select-none leading-none">
               &ldquo;
             </div>
 
-            {/* Review Content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4, ease: easePremuim }}
-                className="relative z-10"
-              >
-                {/* Review Text - Improved readability */}
-                <p className="font-sans text-lg sm:text-xl lg:text-2xl text-[#0d2626] leading-relaxed text-center mb-6 lg:mb-8 px-2 sm:px-4 lg:px-12 pt-6 lg:pt-8">
-                  &ldquo;{currentReview.review}&rdquo;
-                </p>
-
-                {/* Credential Dock */}
-                <div className="flex flex-col items-center gap-4 pt-6 border-t border-[#255e5b]/20">
-                  {/* Portrait */}
-                  <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-[#255e5b] to-[#38948c] flex items-center justify-center border-2 border-[#ade2d9] shadow-[0_0_15px_rgba(173,226,217,0.3)]">
-                    <span className="text-xl lg:text-2xl font-bold text-white">
-                      {currentReview.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-
-                  {/* Name & Achievement */}
-                  <div className="text-center">
-                    <h4 className="font-[family-name:var(--font-display)] text-xl lg:text-2xl font-semibold text-[#0d2626] mb-1">
-                      {currentReview.name}
-                    </h4>
-                    <p className="text-[#255e5b] font-medium text-sm lg:text-base">
-                      {currentReview.achievement}
+            {/* Review Content Wrapper */}
+            <div className="relative flex-1 flex flex-col justify-center w-full z-10 mt-6 sm:mt-4 lg:mt-0">
+              <AnimatePresence mode="wait" custom={slideDirection}>
+                <motion.div
+                  key={activeIndex}
+                  custom={slideDirection}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.4, ease: easePremium }}
+                  className="flex flex-col h-full w-full justify-between transform-gpu will-change-transform"
+                >
+                  {/* Review Text */}
+                  <div className="flex-1 flex items-center justify-center">
+                    <p className="font-sans text-lg sm:text-xl lg:text-2xl text-[#0d2626] leading-relaxed text-center px-2 sm:px-6 lg:px-12">
+                      &ldquo;{currentReview.review}&rdquo;
                     </p>
                   </div>
 
-                  {/* Badges */}
-                  <div className="flex items-center gap-3">
-                    {/* Google Rating */}
-                    <div className="flex items-center gap-1 px-3 py-1.5 bg-[#38948c]/10 border border-[#38948c]/30 rounded-full">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-[#255e5b] text-sm font-medium">4.9</span>
+                  {/* Credential Dock */}
+                  <div className="flex flex-col items-center gap-4 pt-6 mt-6 border-t border-[#255e5b]/20 shrink-0">
+                    {/* Portrait */}
+                    <div className="w-14 h-14 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-[#255e5b] to-[#38948c] flex items-center justify-center border-2 border-[#ade2d9] shadow-[0_0_15px_rgba(173,226,217,0.3)]">
+                      <span className="text-lg lg:text-2xl font-bold text-white font-sans">
+                        {currentReview.name.split(' ').map(n => n[0]).join('')}
+                      </span>
                     </div>
-                    {/* Verified */}
-                    <div className="flex items-center gap-1 px-3 py-1.5 bg-[#255e5b]/10 border border-[#255e5b]/30 rounded-full">
-                      <CheckCircle className="w-4 h-4 text-[#38948c]" />
-                      <span className="text-[#38948c] text-xs font-medium">Verified</span>
+
+                    {/* Name & Achievement */}
+                    <div className="text-center">
+                      <h4 className="font-[family-name:var(--font-display)] text-xl lg:text-2xl font-bold text-[#0d2626] mb-0.5">
+                        {currentReview.name}
+                      </h4>
+                      <p className="text-[#255e5b] font-medium text-xs lg:text-base tracking-wide">
+                        {currentReview.achievement}
+                      </p>
+                    </div>
+
+                    {/* Badges */}
+                    <div className="flex items-center gap-3 mt-1">
+                      <div className="flex items-center gap-1 px-3 py-1.5 bg-[#38948c]/10 border border-[#38948c]/30 rounded-full">
+                        <Star className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-yellow-500 fill-yellow-500" />
+                        <span className="text-[#255e5b] text-[11px] lg:text-sm font-semibold">4.9</span>
+                      </div>
+                      <div className="flex items-center gap-1 px-3 py-1.5 bg-[#255e5b]/10 border border-[#255e5b]/30 rounded-full">
+                        <CheckCircle className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#38948c]" />
+                        <span className="text-[#38948c] text-[11px] lg:text-sm font-bold tracking-wide">Verified</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Navigation Dock */}
-          <div className="flex items-center justify-center gap-3 mt-6 lg:mt-8">
+          <div className="flex items-center justify-center gap-3 lg:gap-4 mt-8 lg:mt-10">
             <button
               onClick={() => handleNavigation('prev')}
-              className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center bg-[#ade2d9]/10 hover:bg-[#38948c]/20 border border-[#38948c]/30 rounded-full text-[#255e5b] transition-colors"
+              className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md rounded-full text-[#50b1a8] transition-all hover:scale-105 active:scale-95 transform-gpu"
             >
               <ChevronLeft className="w-4 h-4 lg:w-5 lg:h-5" />
             </button>
 
-            {/* Pagination Dots */}
-            <div className="flex items-center gap-2 px-3 lg:px-4 py-2 bg-[#ade2d9]/10 backdrop-blur-md rounded-full border border-[#38948c]/20">
+            {/* Pagination Dots - Elongated #50b1a8 active state */}
+            <div className="flex items-center gap-2.5 px-4 py-2.5 lg:py-3 bg-white/5 border border-white/10 backdrop-blur-md rounded-full transform-gpu">
               {reviewsData.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => {
                     setIsAutoPlaying(false)
+                    setSlideDirection(i > activeIndex ? 'right' : 'left')
                     setActiveIndex(i)
                   }}
-                  className={`w-2 h-2 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all duration-400 ease-out ${
                     i === activeIndex
-                      ? 'w-5 lg:w-6 bg-[#255e5b] shadow-[0_0_8px_rgba(37,94,91,0.4)]'
-                      : 'bg-[#38948c]/40 hover:bg-[#38948c]/60'
+                      ? 'w-8 bg-[#50b1a8] shadow-[0_0_10px_rgba(80,177,168,0.8)]'
+                      : 'w-2 bg-[#50b1a8]/30 hover:bg-[#50b1a8]/60'
                   }`}
                 />
               ))}
@@ -192,7 +217,7 @@ export function ReviewsSection() {
 
             <button
               onClick={() => handleNavigation('next')}
-              className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center bg-[#ade2d9]/10 hover:bg-[#38948c]/20 border border-[#38948c]/30 rounded-full text-[#255e5b] transition-colors"
+              className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md rounded-full text-[#50b1a8] transition-all hover:scale-105 active:scale-95 transform-gpu"
             >
               <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
             </button>

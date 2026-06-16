@@ -5,7 +5,7 @@ import { motion, useInView } from 'framer-motion'
 import { ChevronDown, MapPin, Phone, Clock, ArrowRight } from 'lucide-react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
-const easePremuim = [0.16, 1, 0.3, 1]
+const easePremium = [0.16, 1, 0.3, 1]
 
 const faqData = [
   {
@@ -30,6 +30,7 @@ const faqData = [
   },
 ]
 
+// DYNAMIC MAP DATA: Just change the "mapQuery" and it instantly updates the map view.
 const campusData = [
   {
     id: 1,
@@ -37,8 +38,8 @@ const campusData = [
     address: '2nd Floor, Reliance Tower, Kadappakada Junction, Kollam - 691008',
     phone: '+91 98765 43210',
     hours: 'Mon-Sat: 8AM - 8PM',
-    mapUrl: 'https://maps.google.com/?q=8.8932,76.6141',
-    coordinates: { lat: 8.8932, lng: 76.6141 },
+    mapUrl: 'https://maps.google.com/?q=Kadappakada+Junction,Kollam',
+    mapQuery: 'Kadappakada Junction, Kollam, Kerala', // Change this to any location globally
   },
   {
     id: 2,
@@ -46,8 +47,8 @@ const campusData = [
     address: '3rd Floor, Skyline Complex, Chinnakada Main Road, Kollam - 691001',
     phone: '+91 98765 43211',
     hours: 'Mon-Sat: 8AM - 8PM',
-    mapUrl: 'https://maps.google.com/?q=8.8811,76.5856',
-    coordinates: { lat: 8.8811, lng: 76.5856 },
+    mapUrl: 'https://maps.google.com/?q=Chinnakada,Kollam',
+    mapQuery: 'Chinnakada, Kollam, Kerala', // Change this to any location globally
   },
 ]
 
@@ -64,15 +65,15 @@ function FAQItem({
     <div className="border-b border-[#ade2d9]/30 last:border-0">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 text-left group"
+        className="w-full flex items-center justify-between py-4 text-left group outline-none"
       >
         <span className="font-[family-name:var(--font-display)] text-sm lg:text-base font-semibold text-white pr-4 group-hover:text-white/90 transition-colors leading-snug">
           {item.question}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: easePremuim }}
-          className="flex-shrink-0"
+          transition={{ duration: 0.3, ease: easePremium }}
+          className="flex-shrink-0 transform-gpu"
         >
           <ChevronDown className="w-5 h-5 text-white/80" />
         </motion.div>
@@ -80,8 +81,8 @@ function FAQItem({
       <motion.div
         initial={false}
         animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: easePremuim }}
-        className="overflow-hidden"
+        transition={{ duration: 0.35, ease: easePremium }}
+        className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
         <p className="pb-4 text-white/70 leading-relaxed text-sm">
           {item.answer}
@@ -96,17 +97,16 @@ export function FAQCampusesSection() {
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 })
   const [openFAQ, setOpenFAQ] = useState<number | null>(0)
 
-  // Left column gets all 12 FAQs; right column has the trust card
   const leftColumnFAQs = faqData
 
   return (
     <section
       ref={sectionRef}
-      className="relative py-16 lg:py-24 bg-gradient-to-br from-[#255e5b] to-[#38948c] overflow-hidden z-10 mb-[-60px] pb-[80px] rounded-b-[48px] shadow-[0_30px_100px_-20px_rgba(13,38,38,0.12)]"
+      className="relative py-16 lg:py-24 bg-gradient-to-br from-[#255e5b] to-[#38948c] overflow-hidden z-10 mb-[-60px] pb-[80px] rounded-b-[48px] shadow-[0_30px_100px_-20px_rgba(13,38,38,0.12)] contain-paint antialiased"
     >
-        {/* Grid Background */}
+        {/* Subtle Grid Background */}
         <div
-          className="absolute inset-0 opacity-5 pointer-events-none"
+          className="absolute inset-0 opacity-5 pointer-events-none transform-gpu"
           style={{
             backgroundImage: `
               linear-gradient(to right, #fcfdfd 1px, transparent 1px),
@@ -121,17 +121,16 @@ export function FAQCampusesSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: easePremuim }}
+          transition={{ duration: 0.6, ease: easePremium }}
           className="mb-16"
         >
           <h2 className="font-[family-name:var(--font-display)] text-3xl lg:text-4xl font-bold text-[#fcfdfd] tracking-tight mb-8 text-center lg:text-left">
             Frequently Asked Questions
           </h2>
 
-          {/* Two-column grid: left = FAQs, right = trust card */}
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
             {/* Left: FAQ accordion */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-lg">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-lg transform-gpu">
               {leftColumnFAQs.map((item, index) => (
                 <FAQItem
                   key={index}
@@ -145,12 +144,9 @@ export function FAQCampusesSection() {
             {/* Right: Parent-to-Parent Trust Card */}
             <div className="h-full">
               <div className="relative bg-[#f3faf9] h-full w-full rounded-[2.5rem] shadow-[0_20px_50px_rgba(13,38,38,0.1)] p-8 lg:p-10 flex flex-col justify-between overflow-hidden border border-[#ade2d9]/30">
-                {/* Ambient light blob */}
-                <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#ade2d9]/15 blur-[80px] pointer-events-none rounded-full" />
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#ade2d9]/20 blur-[80px] pointer-events-none rounded-full transform-gpu" />
 
-                {/* Top section */}
                 <div className="relative z-10 flex-1">
-                  {/* Lottie Animation - no eyebrow */}
                   <div className="w-full h-auto mb-6 flex items-center justify-center min-h-[200px] md:min-h-[180px]">
                     <DotLottieReact
                       src="https://lottie.host/53a64915-0c67-4ff0-b702-e31187d92486/hOyx65rI9L.lottie"
@@ -161,14 +157,13 @@ export function FAQCampusesSection() {
                   </div>
                 </div>
 
-                {/* Bottom section */}
                 <div className="relative z-10">
                   <p className="text-[#224d4b]/80 text-sm mb-5 font-medium leading-relaxed">
                     Join thousands of students who have transformed their academic journey with CATALYST.
                   </p>
                   <button
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full bg-[#255e5b] hover:bg-[#38948c] text-white py-4 rounded-2xl font-bold text-base transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(37,94,91,0.25)] flex items-center justify-center gap-2"
+                    className="w-full bg-[#255e5b] hover:bg-[#38948c] text-white py-4 rounded-2xl font-bold text-base transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(37,94,91,0.25)] flex items-center justify-center gap-2 transform-gpu will-change-transform"
                   >
                     Join Now To Score UP
                     <ArrowRight className="w-5 h-5" />
@@ -183,7 +178,7 @@ export function FAQCampusesSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: easePremuim, delay: 0.2 }}
+          transition={{ duration: 0.6, ease: easePremium, delay: 0.2 }}
         >
           <h2 className="font-[family-name:var(--font-display)] text-3xl lg:text-4xl font-bold text-[#fcfdfd] tracking-tight mb-8 text-center lg:text-left">
             Our Campuses
@@ -195,53 +190,63 @@ export function FAQCampusesSection() {
                 href={campus.mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block group"
+                className="block group outline-none"
               >
-                <div className="relative bg-white hover:-translate-y-1 border border-[#ade2d9]/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
-                  {/* Map Preview */}
-                  <div className="relative aspect-video bg-gradient-to-br from-[#ade2d9]/30 to-[#f3faf9]">
-                    <div
-                      className="w-full h-full absolute inset-0 opacity-20"
-                      style={{
-                        backgroundImage: `
-                          linear-gradient(to right, #38948c 1px, transparent 1px),
-                          linear-gradient(to bottom, #38948c 1px, transparent 1px)
-                        `,
-                        backgroundSize: '20px 20px',
+                <div className="relative bg-white hover:-translate-y-1.5 border border-[#ade2d9]/30 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-400 ease-out transform-gpu will-change-transform">
+                  
+                  {/* Clean Dark-Mode Map Preview */}
+                  <div className="relative aspect-[21/9] sm:aspect-video bg-[#0d2626] overflow-hidden">
+                    
+                    {/* CSS CROPPING TRICK: 
+                      w-[calc(100%+150px)] h-[calc(100%+150px)] with negative top/left margins
+                      forces the top-left info box completely outside of the visible container frame.
+                    */}
+                    <iframe 
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(campus.mapQuery)}&t=m&z=15&output=embed&iwloc=near`}
+                      className="absolute w-[calc(100%+150px)] h-[calc(100%+150px)] -top-[75px] -left-[75px] border-0 pointer-events-none transition-transform duration-700 ease-out group-hover:scale-105"
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                      style={{ 
+                        filter: 'invert(90%) hue-rotate(180deg) brightness(85%) contrast(110%) opacity(0.85)'
                       }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-full h-1 bg-[#38948c]/30 absolute" />
-                      <div className="w-1 h-full bg-[#38948c]/30 absolute" />
-                    </div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d2626]/80 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-[#38948c]/10 mix-blend-color pointer-events-none" />
+
+                    {/* Animated Pinging Map Pin - Centered perfectly */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
                       <div className="relative">
-                        <div className="absolute inset-0 w-8 h-8 bg-[#255e5b]/30 rounded-full animate-ping" />
-                        <div className="relative w-8 h-8 bg-[#255e5b] rounded-full flex items-center justify-center shadow-lg">
-                          <MapPin className="w-4 h-4 text-white" />
+                        <div className="absolute inset-0 w-10 h-10 bg-[#50b1a8] rounded-full animate-ping opacity-60" />
+                        <div className="relative w-10 h-10 bg-[#255e5b] border-2 border-white rounded-full flex items-center justify-center shadow-xl transform-gpu transition-transform group-hover:scale-110 duration-300">
+                          <MapPin className="w-5 h-5 text-white" />
                         </div>
                       </div>
                     </div>
-                    <div className="absolute bottom-3 right-3 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-[#255e5b] opacity-0 group-hover:opacity-100 transition-opacity">
-                      View on Maps
+                    
+                    {/* Hover Call-to-action Badge */}
+                    <div className="absolute bottom-4 right-4 px-4 py-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg text-xs font-bold text-[#255e5b] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 transform-gpu z-20">
+                      Open in Maps
                     </div>
                   </div>
 
                   {/* Campus Info */}
-                  <div className="p-4 lg:p-5">
-                    <h3 className="font-[family-name:var(--font-display)] text-lg lg:text-xl font-bold text-[#224d4b] mb-3">
+                  <div className="p-5 lg:p-6 bg-white relative z-10">
+                    <h3 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#224d4b] mb-4">
                       {campus.name}
                     </h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-start gap-2 text-[#224d4b]/70">
+                    <div className="space-y-3 text-sm font-medium">
+                      <div className="flex items-start gap-3 text-[#224d4b]/70">
                         <MapPin className="w-4 h-4 mt-0.5 text-[#38948c] flex-shrink-0" />
-                        <span>{campus.address}</span>
+                        <span className="leading-snug">{campus.address}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-[#224d4b]/70">
+                      <div className="flex items-center gap-3 text-[#224d4b]/70">
                         <Phone className="w-4 h-4 text-[#38948c] flex-shrink-0" />
                         <span>{campus.phone}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-[#224d4b]/70">
+                      <div className="flex items-center gap-3 text-[#224d4b]/70">
                         <Clock className="w-4 h-4 text-[#38948c] flex-shrink-0" />
                         <span>{campus.hours}</span>
                       </div>
@@ -253,44 +258,6 @@ export function FAQCampusesSection() {
           </div>
         </motion.div>
       </div>
-
-      {/* SEO schemas */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: faqData.map((faq) => ({
-              '@type': 'Question',
-              name: faq.question,
-              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-            })),
-          }),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'EducationalOrganization',
-            name: 'CATALYST Academy',
-            description: 'Premier Physics & Chemistry Coaching in Kollam',
-            url: 'https://catalyst.edu',
-            telephone: '+91 98765 43210',
-            address: campusData.map((campus) => ({
-              '@type': 'PostalAddress',
-              streetAddress: campus.address,
-              addressLocality: 'Kollam',
-              addressRegion: 'Kerala',
-              postalCode: campus.address.match(/\d{6}/)?.[0] || '691001',
-              addressCountry: 'IN',
-            })),
-            openingHours: 'Mo-Sa 08:00-20:00',
-          }),
-        }}
-      />
     </section>
   )
 }

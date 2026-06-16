@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, User, LogOut, BookOpen, ChevronDown } from 'lucide-react'
+import { Menu, X, User, LogOut, BookOpen, ChevronDown, Phone, MessageCircle, ArrowUpRight } from 'lucide-react'
 
+// --- DATA ---
 const navLinks = [
   {
     href: '/',
@@ -43,16 +44,35 @@ const navLinks = [
   },
 ]
 
+const contacts = [
+  {
+    name: 'Mr. Arun Nath R.',
+    phone: '+919895668184',
+    displayPhone: '+91 98956 68184',
+  },
+  {
+    name: 'Mr. Hasheersha S.',
+    phone: '+919895875221',
+    displayPhone: '+91 98958 75221',
+  },
+]
+
 const easePremium = [0.16, 1, 0.3, 1]
+
+type ContactMode = 'whatsapp' | 'phone' | null
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
+  
   const [hasPurchasedCourse] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isTutor] = useState(false)
+  
+  const [contactMode, setContactMode] = useState<ContactMode>(null)
+  
   const pathname = usePathname()
 
   useEffect(() => {
@@ -61,7 +81,6 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close overlays on outside click
   useEffect(() => {
     const handleClickOutside = () => {
       setIsUserMenuOpen(false)
@@ -71,11 +90,10 @@ export function Navigation() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
-  // Lock body scroll when mobile menu open
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? 'hidden' : ''
+    document.body.style.overflow = (isMenuOpen || contactMode) ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [isMenuOpen])
+  }, [isMenuOpen, contactMode])
 
   const handleContactClick = (e: React.MouseEvent) => {
     if (pathname === '/') {
@@ -91,9 +109,17 @@ export function Navigation() {
     setIsMenuOpen(false)
   }
 
+  const getHref = (phone: string) => {
+    if (contactMode === 'whatsapp') {
+      const cleanPhone = phone.replace('+', '')
+      return `https://wa.me/${cleanPhone}?text=Hi%2C%20I%27m%20interested%20in%20CATALYST%20courses`
+    }
+    return `tel:${phone}`
+  }
+
   return (
     <>
-      {/* ── Pill Navbar ── */}
+      {/* ── PILL NAVBAR ── */}
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -102,15 +128,9 @@ export function Navigation() {
           isScrolled
             ? 'bg-white/60 shadow-[0_8px_32px_rgba(13,38,38,0.12),inset_0_0_0_1px_rgba(255,255,255,0.5)]'
             : 'bg-white/40 shadow-[0_4px_24px_rgba(13,38,38,0.08),inset_0_0_0_1px_rgba(255,255,255,0.3)]'
-        } backdrop-blur-2xl backdrop-saturate-150 border border-white/30 rounded-full px-3 sm:px-4 md:px-6 py-2.5 sm:py-3`}
-        style={{
-          background: isScrolled
-            ? 'linear-gradient(135deg,rgba(255,255,255,0.7) 0%,rgba(243,250,249,0.6) 100%)'
-            : 'linear-gradient(135deg,rgba(255,255,255,0.5) 0%,rgba(243,250,249,0.4) 100%)',
-        }}
+        } backdrop-blur-2xl border border-white/30 rounded-full px-3 sm:px-4 md:px-6 py-2 sm:py-3`}
       >
         <div className="flex items-center justify-between">
-          {/* Custom SVG Logo */}
           <button onClick={handleLogoClick} className="flex items-center group cursor-pointer">
             <img 
               src="https://res.cloudinary.com/dp2r068c8/image/upload/v1781361635/CATALYST_STUDY_CENTRE_logo_qoaqxh.svg" 
@@ -131,7 +151,7 @@ export function Navigation() {
                 <Link
                   href={link.href}
                   onClick={link.href === '/#contact' ? handleContactClick : undefined}
-                  className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-all rounded-full ${
+                  className={`flex items-center gap-1 px-4 py-2 text-sm font-semibold transition-all rounded-full font-[family-name:var(--font-display)] ${
                     pathname === link.href
                       ? 'text-[#38948c] bg-[#ade2d9]/30'
                       : 'text-[#224d4b] hover:text-[#38948c] hover:bg-[#ade2d9]/20'
@@ -139,152 +159,49 @@ export function Navigation() {
                 >
                   {link.label}
                   {link.sections.length > 0 && (
-                    <ChevronDown
-                      className={`w-3 h-3 transition-transform ${
-                        activeDropdown === link.label ? 'rotate-180' : ''
-                      }`}
-                    />
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />
                   )}
                 </Link>
 
-                {/* Desktop Dropdown */}
                 <AnimatePresence>
                   {activeDropdown === link.label && link.sections.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2, ease: easePremium }}
-                      className="absolute top-full left-0 mt-2 w-48"
-                      style={{
-                        background:
-                          'linear-gradient(135deg,rgba(255,255,255,0.85) 0%,rgba(243,250,249,0.8) 100%)',
-                      }}
-                      onClick={(e) => e.stopPropagation()}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-2 w-48 rounded-2xl overflow-hidden border border-white/40 shadow-xl bg-white/90 backdrop-blur-xl p-1.5"
                     >
-                      <div className="backdrop-blur-2xl backdrop-saturate-150 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(13,38,38,0.15),inset_0_0_0_1px_rgba(255,255,255,0.3)] p-2">
-                        {link.sections.map((section) => (
-                          <Link
-                            key={section.href}
-                            href={section.href}
-                            className="block px-4 py-2.5 text-sm text-[#224d4b] hover:text-[#38948c] hover:bg-[#ade2d9]/20 rounded-xl transition-colors"
-                          >
-                            {section.label}
-                          </Link>
-                        ))}
-                      </div>
+                      {link.sections.map((section) => (
+                        <Link
+                          key={section.href}
+                          href={section.href}
+                          onClick={() => setActiveDropdown(null)}
+                          className="block px-4 py-2.5 text-sm font-medium text-[#224d4b] hover:text-[#38948c] hover:bg-[#ade2d9]/20 rounded-xl transition-colors font-[family-name:var(--font-display)]"
+                        >
+                          {section.label}
+                        </Link>
+                      ))}
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             ))}
-
-            {hasPurchasedCourse && (
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 text-sm font-medium text-[#255e5b] bg-[#ade2d9]/30 rounded-full border border-[#ade2d9] shadow-[0_0_10px_rgba(125,203,193,0.3)] hover:shadow-[0_0_15px_rgba(125,203,193,0.5)] transition-shadow"
-              >
-                Learning Hub
-              </Link>
-            )}
           </div>
 
-          {/* Right: Auth + Hamburger */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Auth Button */}
+          {/* Right Section */}
+          <div className="flex items-center gap-2">
             <div className="relative">
               <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsUserMenuOpen(!isUserMenuOpen)
-                }}
-                className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full transition-all ${
-                  isLoggedIn
-                    ? isTutor
-                      ? 'bg-[#255e5b] text-white'
-                      : 'bg-gradient-to-br from-[#255e5b] to-[#38948c] text-white font-semibold text-sm'
-                    : 'bg-[#0d2626] text-white text-sm font-medium hover:bg-[#224d4b]'
-                }`}
+                onClick={(e) => { e.stopPropagation(); setIsUserMenuOpen(!isUserMenuOpen); }}
+                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0d2626] text-white hover:bg-[#224d4b] transition-all"
               >
-                {isLoggedIn ? (
-                  isTutor ? (
-                    '👨‍🏫'
-                  ) : (
-                    'AK'
-                  )
-                ) : (
-                  <User className="w-4 h-4" />
-                )}
+                <User className="w-4 h-4" />
               </button>
-
-              <AnimatePresence>
-                {isUserMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ duration: 0.2, ease: easePremium }}
-                    className="absolute right-0 top-14 w-48"
-                    style={{
-                      background:
-                        'linear-gradient(135deg,rgba(255,255,255,0.9) 0%,rgba(243,250,249,0.85) 100%)',
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="backdrop-blur-2xl backdrop-saturate-150 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(13,38,38,0.15),inset_0_0_0_1px_rgba(255,255,255,0.3)] overflow-hidden">
-                      {isLoggedIn ? (
-                        <>
-                          {isTutor ? (
-                            <Link
-                              href="/tutor-portal"
-                              className="flex items-center gap-3 px-4 py-3 text-sm text-[#224d4b] hover:bg-[#f3faf9] transition-colors"
-                            >
-                              <BookOpen className="w-4 h-4" />
-                              Portal Dashboard
-                            </Link>
-                          ) : (
-                            <Link
-                              href="/dashboard"
-                              className="flex items-center gap-3 px-4 py-3 text-sm text-[#224d4b] hover:bg-[#f3faf9] transition-colors"
-                            >
-                              <BookOpen className="w-4 h-4" />
-                              My Learning
-                            </Link>
-                          )}
-                          <button
-                            onClick={() => setIsLoggedIn(false)}
-                            className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            Sign Out
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <Link
-                            href="/login"
-                            className="block px-4 py-3 text-sm text-[#224d4b] hover:bg-[#f3faf9] transition-colors"
-                          >
-                            Student Sign In
-                          </Link>
-                          <Link
-                            href="/tutor-portal"
-                            className="block px-4 py-3 text-sm text-[#224d4b] hover:bg-[#f3faf9] transition-colors border-t border-[#ade2d9]/30"
-                          >
-                            Tutor Portal
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
 
-            {/* Hamburger */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               className="md:hidden p-2 text-[#224d4b] hover:bg-[#ade2d9]/20 rounded-full transition-colors"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -293,104 +210,93 @@ export function Navigation() {
         </div>
       </motion.nav>
 
-      {/* ── Mobile Full-Screen Overlay ── */}
+      {/* ── MOBILE MENU OVERLAY ── */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
-            {/* Backdrop */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 bg-[#0d2626]/40 backdrop-blur-sm md:hidden" onClick={() => setIsMenuOpen(false)} />
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-40 bg-[#0d2626]/40 backdrop-blur-sm md:hidden"
-              onClick={() => setIsMenuOpen(false)}
-            />
-
-            {/* Sheet panel — slides down from top */}
-            <motion.div
-              initial={{ y: '-100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '-100%' }}
-              transition={{ duration: 0.4, ease: easePremium }}
-              className="fixed top-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-2xl border-b border-[#ade2d9]/40 shadow-2xl rounded-b-3xl overflow-hidden"
+              initial={{ y: '-100%' }} animate={{ y: 0 }} exit={{ y: '-100%' }} transition={{ duration: 0.4, ease: easePremium }}
+              className="fixed top-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-2xl border-b border-[#ade2d9]/40 shadow-2xl rounded-b-3xl overflow-hidden flex flex-col"
             >
-              {/* Top bar inside sheet — mirrors navbar alignment */}
               <div className="flex items-center justify-between px-5 pt-5 pb-4">
-                {/* Custom SVG Logo in Mobile Menu */}
-                <button
-                  onClick={handleLogoClick}
-                  className="flex items-center"
-                >
-                  <img 
-                    src="https://res.cloudinary.com/dp2r068c8/image/upload/v1781361635/CATALYST_STUDY_CENTRE_logo_qoaqxh.svg" 
-                    alt="Catalyst Logo" 
-                    className="h-9 w-auto object-contain"
-                  />
-                </button>
-                <button
-                  onClick={() => setIsMenuOpen(false)}
-                  className="p-2 rounded-full text-[#224d4b] hover:bg-[#ade2d9]/20 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <img src="https://res.cloudinary.com/dp2r068c8/image/upload/v1781361635/CATALYST_STUDY_CENTRE_logo_qoaqxh.svg" alt="Catalyst Logo" className="h-9 w-auto" />
+                <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded-full text-[#224d4b] hover:bg-[#ade2d9]/20"><X className="w-5 h-5" /></button>
               </div>
-
-              {/* Divider */}
               <div className="mx-5 h-px bg-[#ade2d9]/40" />
-
-              {/* Nav Links */}
-              <nav className="flex flex-col gap-1 px-5 pt-5 pb-2">
+              <nav className="flex flex-col gap-1 px-5 pt-4 pb-2">
                 {navLinks.map((link, index) => (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.06, ease: easePremium }}
-                  >
+                  <motion.div key={link.href} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}>
                     <Link
                       href={link.href}
-                      onClick={(e) => {
-                        if (link.href === '/#contact') handleContactClick(e)
-                        else setIsMenuOpen(false)
-                      }}
-                      className={`flex items-center justify-between w-full px-4 py-3.5 rounded-2xl text-base font-semibold transition-colors ${
-                        pathname === link.href
-                          ? 'text-[#38948c] bg-[#ade2d9]/25'
-                          : 'text-[#224d4b] hover:bg-[#f3faf9]'
-                      }`}
+                      onClick={(e) => { if (link.href === '/#contact') handleContactClick(e); else setIsMenuOpen(false); }}
+                      className={`block w-full px-4 py-3.5 rounded-2xl text-[17px] font-bold font-[family-name:var(--font-display)] ${pathname === link.href ? 'text-[#38948c] bg-[#ade2d9]/25' : 'text-[#224d4b]'}`}
                     >
                       {link.label}
-                      {link.sections.length > 0 && (
-                        <ChevronDown className="w-4 h-4 text-[#38948c]" />
-                      )}
                     </Link>
                   </motion.div>
                 ))}
               </nav>
-
-              {/* CTA Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, ease: easePremium }}
-                className="px-5 pt-4 pb-8"
-              >
-                <a
-                  href="https://wa.me/919876543210?text=Hi%2C%20I%27m%20interested%20in%20CATALYST%20courses"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-center gap-2.5 w-full py-4 bg-[#255e5b] hover:bg-[#38948c] text-white font-bold text-base rounded-2xl transition-colors shadow-lg"
-                >
-                  <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                  </svg>
-                  Chat with us on WhatsApp
-                </a>
-              </motion.div>
+              <div className="px-5 pt-2 pb-8 grid grid-cols-2 gap-3">
+                <button onClick={() => { setContactMode('phone'); setIsMenuOpen(false); }} className="flex items-center justify-center gap-2 py-3.5 bg-[#f3faf9] border border-[#ade2d9] text-[#255e5b] font-bold rounded-2xl font-[family-name:var(--font-display)] text-sm">
+                  <Phone className="w-4 h-4" /> Call
+                </button>
+                <button onClick={() => { setContactMode('whatsapp'); setIsMenuOpen(false); }} className="flex items-center justify-center gap-2 py-3.5 bg-[#255e5b] text-white font-bold rounded-2xl shadow-lg font-[family-name:var(--font-display)] text-sm">
+                  <MessageCircle className="w-4 h-4" /> WhatsApp
+                </button>
+              </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* ── COMPACT CONTACT MODAL (Smaller for Mobile) ── */}
+      <AnimatePresence>
+        {contactMode && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+            className="fixed inset-0 z-[200] flex items-center justify-center p-5 antialiased"
+          >
+            <div className="absolute inset-0 bg-[#0d2626]/70 backdrop-blur-md" onClick={() => setContactMode(null)} />
+            
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="relative bg-white rounded-[2rem] max-w-sm sm:max-w-lg w-full shadow-2xl border border-white/20 overflow-hidden"
+            >
+              {/* Tightened Header */}
+              <div className="p-5 sm:p-8 pb-4 flex items-start justify-between">
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#0d2626] font-[family-name:var(--font-display)] leading-tight">
+                    {contactMode === 'whatsapp' ? 'WhatsApp Faculty' : 'Call Faculty'}
+                  </h3>
+                  <p className="text-[11px] sm:text-sm text-[#224d4b]/60 font-medium mt-1">Select a director below</p>
+                </div>
+                <button onClick={() => setContactMode(null)} className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-black transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Compact Grid */}
+              <div className="p-4 sm:p-8 pt-2 grid grid-cols-2 gap-3 sm:gap-4 bg-[#fcfdfd]">
+                {contacts.map((contact, index) => (
+                  <a 
+                    key={index} href={getHref(contact.phone)} target={contactMode === 'whatsapp' ? '_blank' : undefined} rel="noreferrer"
+                    onClick={() => setContactMode(null)}
+                    className="relative bg-white border border-[#ade2d9]/40 rounded-2xl p-4 sm:p-5 hover:border-[#38948c]/60 transition-all flex flex-col items-center text-center group"
+                  >
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[#f3faf9] border border-[#ade2d9]/50 rounded-full flex items-center justify-center text-[#38948c] group-hover:bg-[#255e5b] group-hover:text-white transition-all mb-2 sm:mb-3">
+                      <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </div>
+                    <p className="font-bold text-[#0d2626] text-[13px] sm:text-[15px] font-[family-name:var(--font-display)] leading-tight">{contact.name}</p>
+                    <div className="hidden sm:flex items-center gap-1.5 mt-1.5 text-[#224d4b]/60 text-xs">
+                       <p>{contact.displayPhone}</p>
+                    </div>
+                    <ArrowUpRight className="absolute top-2 right-2 w-3.5 h-3.5 text-[#ade2d9] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
